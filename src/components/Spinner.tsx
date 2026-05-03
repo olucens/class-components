@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { Component } from "react";
 
 class Spinner extends Component {
   render() {
@@ -6,8 +6,8 @@ class Spinner extends Component {
       <div className="spinner">
         <div className="spinner__circle" />
       </div>
-    )
+    );
   }
 }
 
-export default Spinner
+export default Spinner;

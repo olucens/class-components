@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { Component } from "react";
 
 class Header extends Component {
   render() {
@@ -8,8 +8,8 @@ class Header extends Component {
           <span className="header__logo">⚡ PokéSearch</span>
         </div>
       </header>
-    )
+    );
   }
 }
 
-export default Header
+export default Header;

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700&display=swap");
 
 /* ── Variables ─────────────────────────────────────────── */
 :root {
@@ -11,13 +11,15 @@
   --text-muted: #8888aa;
   --border: #2a2a4a;
   --radius: 12px;
-  --font-pixel: 'Press Start 2P', monospace;
-  --font-body: 'Nunito', sans-serif;
+  --font-pixel: "Press Start 2P", monospace;
+  --font-body: "Nunito", sans-serif;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* ── Reset ──────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -71,18 +73,36 @@ main {
   width: 100%;
   padding: 2rem 1.5rem;
   flex: 1;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.search-panel,
+.results-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.search-panel {
+  padding: 1.25rem;
+}
+
+.results-panel {
+  padding: 1.25rem;
+  min-height: 320px;
 }
 
 /* ── Search ─────────────────────────────────────────────── */
 .search {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 2.5rem;
-  background: var(--bg-card);
-  padding: 1.25rem 1.5rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .search input {
@@ -116,7 +136,9 @@ main {
   font-size: 0.55rem;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition:
+    background 0.2s,
+    transform 0.1s;
   white-space: nowrap;
 }
 
@@ -146,7 +168,9 @@ main {
   align-items: center;
   text-align: center;
   box-shadow: var(--shadow);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .card:hover {
@@ -177,6 +201,52 @@ main {
 .card__description {
   color: var(--text-muted);
   font-size: 0.95rem;
+}
+
+.card__desc-text {
+  margin-top: 0.75rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.pagination span {
+  color: var(--text-muted);
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+}
+
+.pagination button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+}
+
+.pagination button:hover {
+  background: #c1121f;
+}
+
+.pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ── Loading ────────────────────────────────────────────── */
@@ -246,7 +316,9 @@ main {
   font-size: 0.55rem;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
 }
 
 .error-boundary button:hover,
@@ -277,6 +349,10 @@ main {
 
   .card-list {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .pagination {
+    flex-direction: column;
   }
 
   .header,

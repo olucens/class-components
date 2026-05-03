@@ -1,53 +1,51 @@
-import { Component } from 'react'
-import type { ErrorInfo, ReactNode } from 'react'
+import { Component } from "react";
+import type { ErrorInfo, ReactNode } from "react";
 
 interface ErrorBoundaryProps {
-  children: ReactNode
-  onReset?: () => void
+  children: ReactNode;
+  onReset?: () => void;
 }
 
 interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
+  hasError: boolean;
+  error: Error | null;
 }
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
-    super(props)
+    super(props);
     this.state = {
       hasError: false,
       error: null,
-    }
+    };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('ErrorBoundary caught:', error, info)
+    console.error("ErrorBoundary caught:", error, info);
   }
 
   handleReset = () => {
-    this.props.onReset?.()
-    this.setState({ hasError: false, error: null })
-  }
+    this.props.onReset?.();
+    this.setState({ hasError: false, error: null });
+  };
 
   render() {
     if (this.state.hasError) {
       return (
         <div className="error-boundary">
           <h2>Something went wrong 💥</h2>
-          <p className="error-boundary__message">
-            {this.state.error?.message}
-          </p>
+          <p className="error-boundary__message">{this.state.error?.message}</p>
           <button onClick={this.handleReset}>Try again</button>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
 
-export default ErrorBoundary
+export default ErrorBoundary;
