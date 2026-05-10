@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '../test-utils'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
-import { expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const originalFetch = globalThis.fetch
 
@@ -21,6 +21,15 @@ const page1 = {
 };
 
 describe('App integration', () => {
+  beforeEach(() => {
+    window.localStorage.clear()
+    globalThis.fetch = originalFetch
+  })
+
+  afterEach(() => {
+    window.localStorage.clear()
+    globalThis.fetch = originalFetch
+  })
     
   it('loads list and shows card', async () => {
     
@@ -40,28 +49,37 @@ describe('App integration', () => {
     globalThis.fetch = originalFetch
   })
 
-  it('description should be not displayed if try to fetch them not in english', async () => {
+  it('loads list of 2 Pokemons and finds cached matches by partial name', async () => {
     
     // mock fetch sequence used by App: list -> details -> species
     globalThis.fetch = vi.fn()
       // first call: list
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [{ name: page0.details.name, url: `https://pokeapi.co/api/v2/pokemon/${page0.details.id}/` }], next: null }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [{ name: page0.details.name, url: `https://pokeapi.co/api/v2/pokemon/${page0.details.id}/` }, { name: page1.details.name, url: `https://pokeapi.co/api/v2/pokemon/${page1.details.id}/` }], next: null }) })
       // second call: details
       .mockResolvedValueOnce({ ok: true, json: async () => ({ id: page0.details.id, name: page0.details.name }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ id: page1.details.id, name: page1.details.name }) })
       // third call: species (only non-English entries)
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ flavor_text_entries: [ { flavor_text: 'Descrizione in italiano.', language: { name: 'it' } } ] }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ flavor_text_entries: page0.species.flavor_text_entries }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ flavor_text_entries: page1.species.flavor_text_entries }) })
 
     render(<App />)
 
-    // name should appear
+    // both cached names should appear
     expect(await screen.findByText(/bulbasaur/i)).toBeInTheDocument()
 
-    // since species entries have no English entry, App should show fallback text
-    const desc = await screen.findByText(/No description available\./i)
-    expect(desc).toBeInTheDocument()
+    expect(await screen.findByText(/raichu/i)).toBeInTheDocument()
 
-    // restore
-    globalThis.fetch = originalFetch
+    const input = screen.getByPlaceholderText(/Search Pokémon/i)
+    await userEvent.clear(input)
+    await userEvent.type(input, 'a')
+    const btn = screen.getByRole('button', { name: /search/i })
+    await userEvent.click(btn)
+
+    const cachedNames = await screen.findAllByRole('heading', { level: 3 })
+    expect(cachedNames.map((node) => node.textContent)).toEqual([
+      'bulbasaur',
+      'raichu',
+    ])
   })
 
   it('shows error when list API fails', async () => {
