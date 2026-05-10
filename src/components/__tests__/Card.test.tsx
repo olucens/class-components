@@ -1,5 +1,7 @@
 import { render, screen } from '../../test-utils'
 import Card from '../Card'
+import { describe, expect, it } from 'vitest'
+
 
 describe('Card', () => {
   it('renders name, id and image alt', () => {

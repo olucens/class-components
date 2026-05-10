@@ -1,5 +1,7 @@
 import { render, screen } from '../../test-utils'
 import CardList from '../CardList'
+import { describe, expect, it } from 'vitest'
+
 
 const sample = [{ name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/', description: 'desc' }]
 
@@ -21,7 +23,7 @@ describe('CardList', () => {
   })
 
   it('renders cards for results', () => {
-    render(<CardList results={sample as any} loading={false} error={null} />)
+    render(<CardList results={sample} loading={false} error={null} />)
     expect(screen.getByText(/bulbasaur/i)).toBeInTheDocument()
   })
 })

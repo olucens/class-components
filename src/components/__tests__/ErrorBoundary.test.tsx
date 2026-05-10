@@ -1,6 +1,7 @@
 import { render, screen } from '../../test-utils'
 import ErrorBoundary from '../ErrorBoundary'
 import { vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 function Bomb() {
   throw new Error('boom')
