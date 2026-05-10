@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { render as rtlRender } from '@testing-library/react'
 
-const AllProviders = ({ children }: { children?: ReactElement }) => {
+const AllProviders = ({ children }: { children?: ReactNode }) => {
   return <>{children}</>
 }
 
