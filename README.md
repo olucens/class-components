@@ -57,3 +57,19 @@ npm run lint
 npm run format:fix
 ```
 
+## Run tests
+
+### Run all vitest in general
+```bash
+npm run test
+```
+
+### Run test coverage
+```bash
+npm run test:coverage
+```
+
+### Run vitest with graphical ui in browser
+```bash
+npm run test:ui
+```

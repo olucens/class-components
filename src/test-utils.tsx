@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { render as rtlRender } from '@testing-library/react'
 
 const AllProviders = ({ children }: { children?: ReactElement }) => {

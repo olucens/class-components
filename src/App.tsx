@@ -4,57 +4,19 @@ import Search from "./components/Search";
 import CardList from "./components/CardList";
 import ErrorBoundary from "./components/ErrorBoundary";
 import type Pokemon from "./interfaces/Pokemon";
+import type {
+  AppState,
+  AppViewProps,
+  PokemonListResponse,
+  PokemonSpeciesResponse,
+  PokemonDetailsResponse
+} from "./types/interfaces";
 
-interface AppState {
-  results: Pokemon[];
-  loading: boolean;
-  error: string | null;
-  searchTerm: string;
-  throwError: boolean;
-  page: number;
-  pageSize: number;
-  hasNext: boolean;
-}
-
-interface AppViewProps {
-  results: Pokemon[];
-  loading: boolean;
-  error: string | null;
-  throwError: boolean;
-  page: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-  onSearch: (term: string) => void;
-  onTriggerError: () => void;
-  onNext: () => void;
-  onPrev: () => void;
-}
-
-interface PokemonListItem {
-  name: string;
-  url: string;
-}
-
-interface PokemonListResponse {
-  results: PokemonListItem[];
-  next: string | null;
-}
-
-interface PokemonDetailsResponse {
-  id: number;
-  name: string;
-}
-
-interface PokemonSpeciesResponse {
-  flavor_text_entries: Array<{
-    flavor_text: string;
-    language: { name: string };
-  }>;
-}
 
 const normalizeText = (value: string) =>
   value
-    .replace(/[\n\f\r]+/g, " ")
+    .replace(/[\n\f\r]+/g,
+      " ")
     .replace(/\s+/g, " ")
     .trim();
 
