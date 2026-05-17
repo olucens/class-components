@@ -57,8 +57,3 @@ npm run lint
 npm run format:fix
 ```
 
-## Submission notes
-
-- Create and submit your work from a branch named `class-components`.
-- The app fetches item data from PokeAPI using search by name and offset/limit pagination.
-- The error test button is available in the UI to demonstrate the error boundary.
