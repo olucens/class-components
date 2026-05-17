@@ -3,95 +3,8 @@ import Header from "./components/Header";
 import Search from "./components/Search";
 import CardList from "./components/CardList";
 import ErrorBoundary from "./components/ErrorBoundary";
-import type Pokemon from "./interfaces/Pokemon";
-
-interface AppState {
-  results: Pokemon[];
-  loading: boolean;
-  error: string | null;
-  searchTerm: string;
-  throwError: boolean;
-  page: number;
-  pageSize: number;
-  hasNext: boolean;
-}
-
-interface AppViewProps {
-  results: Pokemon[];
-  loading: boolean;
-  error: string | null;
-  throwError: boolean;
-  page: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-  onSearch: (term: string) => void;
-  onTriggerError: () => void;
-  onNext: () => void;
-  onPrev: () => void;
-}
-
-interface PokemonListItem {
-  name: string;
-  url: string;
-}
-
-interface PokemonListResponse {
-  results: PokemonListItem[];
-  next: string | null;
-}
-
-interface PokemonDetailsResponse {
-  id: number;
-  name: string;
-}
-
-interface PokemonSpeciesResponse {
-  flavor_text_entries: Array<{
-    flavor_text: string;
-    language: { name: string };
-  }>;
-}
-
-const normalizeText = (value: string) =>
-  value
-    .replace(/[\n\f\r]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-const getSpeciesDescription = (species: PokemonSpeciesResponse) => {
-  const englishEntry = species.flavor_text_entries.find(
-    (entry) => entry.language.name === "en",
-  );
-
-  return englishEntry
-    ? normalizeText(englishEntry.flavor_text)
-    : "No description available.";
-};
-
-const fetchPokemonDetails = async (url: string): Promise<Pokemon> => {
-  const pokemonResponse = await fetch(url);
-
-  if (!pokemonResponse.ok) {
-    throw new Error(`Server error: ${pokemonResponse.status}`);
-  }
-
-  const pokemon = (await pokemonResponse.json()) as PokemonDetailsResponse;
-  const speciesResponse = await fetch(
-    `https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}/`,
-  );
-
-  if (!speciesResponse.ok) {
-    throw new Error(`Server error: ${speciesResponse.status}`);
-  }
-
-  const species = (await speciesResponse.json()) as PokemonSpeciesResponse;
-
-  return {
-    name: pokemon.name,
-    url: `https://pokeapi.co/api/v2/pokemon/${pokemon.id}/`,
-    description: getSpeciesDescription(species),
-  };
-};
+import { fetchPokemonByTerm, fetchPokemonPage } from "./api/fetch-data-api";
+import type { AppState, AppViewProps } from "./types/interfaces";
 
 class AppView extends Component<AppViewProps> {
   render() {
@@ -173,45 +86,34 @@ class App extends Component<Record<string, never>, AppState> {
 
   fetchData = async (term: string, page = 0) => {
     const trimmed = term.trim();
-    const pageSize = this.state.pageSize;
 
     this.setState({ loading: true, error: null });
 
     try {
       if (trimmed) {
-        const pokemon = await fetchPokemonDetails(
-          `https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(trimmed.toLowerCase())}`,
-        );
+        const results = await fetchPokemonByTerm(trimmed);
 
         this.setState({
-          results: [pokemon],
+          results,
           loading: false,
           page: 0,
           hasNext: false,
           searchTerm: trimmed,
         });
+
         return;
       }
 
-      const offset = page * pageSize;
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?limit=${pageSize}&offset=${offset}`,
-      );
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-
-      const data = (await response.json()) as PokemonListResponse;
-      const results = await Promise.all(
-        data.results.map((item) => fetchPokemonDetails(item.url)),
+      const { results, hasNext } = await fetchPokemonPage(
+        page,
+        this.state.pageSize,
       );
 
       this.setState({
         results,
         loading: false,
         page,
-        hasNext: Boolean(data.next),
+        hasNext,
         searchTerm: "",
       });
     } catch (error) {
