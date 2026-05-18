@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import type Pokemon from "../interfaces/Pokemon";
 import Spinner from "../components/Spinner";
 import ErrorMessage from "../components/ErrorMessage";
+import { useParams } from "react-router-dom";
 
 interface PokemonDetailsPageProps {
   pokemonId: string;
 }
 
-export default function PokemonDetailsPage({
-  pokemonId,
-}: PokemonDetailsPageProps) {
+export default function PokemonDetailsPage() {
+  const { pokemonId } = useParams();
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

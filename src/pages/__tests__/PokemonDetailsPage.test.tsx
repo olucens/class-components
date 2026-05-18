@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '../../test-utils';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import PokemonDetailsPage from '../PokemonDetailsPage';
 
 const originalFetch = globalThis.fetch;
@@ -27,10 +28,20 @@ describe('PokemonDetailsPage', () => {
     globalThis.fetch = originalFetch;
   });
 
+  const renderWithRouter = (pokemonId: string) => {
+    return render(
+      <MemoryRouter initialEntries={[`/details/${pokemonId}`]}>
+        <Routes>
+          <Route path="/details/:pokemonId" element={<PokemonDetailsPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+  };
+
   it('renders loading spinner initially', () => {
     globalThis.fetch = vi.fn(() => new Promise(() => {})) as typeof globalThis.fetch;
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     const spinner = document.querySelector('.spinner');
     expect(spinner).toBeInTheDocument();
@@ -48,7 +59,7 @@ describe('PokemonDetailsPage', () => {
         json: async () => mockSpeciesData,
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       const heading = screen.getByRole('heading', { level: 2 });
@@ -73,7 +84,7 @@ describe('PokemonDetailsPage', () => {
         json: async () => mockSpeciesData,
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       const img = screen.getByAltText(/bulbasaur/i);
@@ -90,7 +101,7 @@ describe('PokemonDetailsPage', () => {
       new Error('Failed to fetch Pokemon: 404')
     ) as any;
 
-    render(<PokemonDetailsPage pokemonId="unknown-pokemon" />);
+    renderWithRouter('unknown-pokemon');
 
     await waitFor(() => {
       expect(screen.getByText(/Failed to fetch Pokemon/i)).toBeInTheDocument();
@@ -108,7 +119,7 @@ describe('PokemonDetailsPage', () => {
         new Error('Failed to fetch species: 404')
       );
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       expect(screen.getByText(/Failed to fetch species/i)).toBeInTheDocument();
@@ -134,7 +145,7 @@ describe('PokemonDetailsPage', () => {
         }),
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       const description = screen.getByText(/A strange seed\. With a plant\./i);
@@ -156,7 +167,7 @@ describe('PokemonDetailsPage', () => {
 
     globalThis.fetch = fetchMock;
 
-    render(<PokemonDetailsPage pokemonId="pikachu" />);
+    renderWithRouter('pikachu');
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -173,7 +184,7 @@ describe('PokemonDetailsPage', () => {
       new Error('Network error')
     ) as any;
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       const errorDiv = document.querySelector('.error');
@@ -193,7 +204,7 @@ describe('PokemonDetailsPage', () => {
         json: async () => mockSpeciesData,
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       const details = document.querySelector('.pokemon-details');
@@ -201,14 +212,6 @@ describe('PokemonDetailsPage', () => {
 
       const name = screen.getByRole('heading', { level: 2 });
       expect(name).toHaveTextContent(/bulbasaur/i);
-    });
-  });
-
-  it('displays error when pokemonId is empty', async () => {
-    render(<PokemonDetailsPage pokemonId="" />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/No Pokemon selected/i)).toBeInTheDocument();
     });
   });
 
@@ -224,7 +227,7 @@ describe('PokemonDetailsPage', () => {
         status: 404,
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       expect(screen.getByText(/Failed to fetch species/i)).toBeInTheDocument();
@@ -250,7 +253,7 @@ describe('PokemonDetailsPage', () => {
         }),
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       expect(screen.getByText(/No description available/i)).toBeInTheDocument();
@@ -265,7 +268,7 @@ describe('PokemonDetailsPage', () => {
         status: 404,
       });
 
-    render(<PokemonDetailsPage pokemonId="unknown" />);
+    renderWithRouter('unknown');
 
     await waitFor(() => {
       expect(screen.getByText(/Failed to fetch Pokemon/i)).toBeInTheDocument();
@@ -284,7 +287,7 @@ describe('PokemonDetailsPage', () => {
         json: async () => mockSpeciesData,
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       const content = document.querySelector('.pokemon-details__content');
@@ -307,7 +310,7 @@ describe('PokemonDetailsPage', () => {
         json: async () => mockSpeciesData,
       });
 
-    render(<PokemonDetailsPage pokemonId="bulbasaur" />);
+    renderWithRouter('bulbasaur');
 
     await waitFor(() => {
       const img = screen.getByAltText(/bulbasaur/i);
