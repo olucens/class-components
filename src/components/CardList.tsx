@@ -7,10 +7,11 @@ interface CardListProps {
   results: Pokemon[];
   loading: boolean;
   error: string | null;
+  onCardClick?: (name: string) => void;
 }
 
 export default function CardList(props: CardListProps) {
-  const { results, loading, error } = props;
+  const { results, loading, error, onCardClick } = props;
 
   if (loading) {
     return <Spinner />;
@@ -25,15 +26,16 @@ export default function CardList(props: CardListProps) {
   }
 
   return (
-      <div className="card-list">
-        {results.map((pokemon) => (
-          <Card
-            key={pokemon.name}
-            name={pokemon.name}
-            url={pokemon.url}
-            description={pokemon.description}
-          />
-        ))}
-      </div>
-    );
-};
+    <div className="card-list">
+      {results.map((pokemon) => (
+        <Card
+          key={pokemon.name}
+          name={pokemon.name}
+          url={pokemon.url}
+          description={pokemon.description}
+          onClick={onCardClick}
+        />
+      ))}
+    </div>
+  );
+}

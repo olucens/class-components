@@ -1,12 +1,8 @@
-import { useEffect, useState, type ChangeEvent, type KeyboardEvent } from "react";
+import { useState, type ChangeEvent, type KeyboardEvent } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 interface SearchProps {
   onSearch: (term: string) => void;
-}
-
-interface SearchState {
-  inputValue: string;
 }
 
 export default function Search(props: SearchProps) {

@@ -102,7 +102,10 @@ export default function App() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchData(searchTerm, 0);
+    // Note: searchTerm comes from localStorage, not props.
+    // This effect initializes data on mount.
   }, []);
 
   const handleSearch = (term: string) => {
