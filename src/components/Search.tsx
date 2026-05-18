@@ -1,4 +1,5 @@
-import { Component, type ChangeEvent, type KeyboardEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type KeyboardEvent } from "react";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 interface SearchProps {
   onSearch: (term: string) => void;
@@ -8,54 +9,40 @@ interface SearchState {
   inputValue: string;
 }
 
-class Search extends Component<SearchProps, SearchState> {
-  constructor(props: SearchProps) {
-    super(props);
+export default function Search(props: SearchProps) {
+  const { onSearch } = props;
+  
+  const [cache, setCache] = useLocalStorage("searchTerm", "");
+  const [inputValue, setInputValue] = useState(cache || "");
 
-    const saved = localStorage.getItem("searchTerm") ?? "";
-    this.state = {
-      inputValue: saved,
-    };
-  }
-
-  componentDidMount() {}
-
-  handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ inputValue: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
   };
 
-  handleSearch = () => {
-    const trimmed = this.state.inputValue.trim();
-
-    const saved = localStorage.getItem("searchTerm") ?? "";
-    if (trimmed && trimmed === saved) {
-      return;
+  const handleSearch = () => {
+    const trimmed = inputValue.trim();
+    if (trimmed !== cache) {
+      setCache(trimmed);
+      onSearch(trimmed);
     }
-
-    localStorage.setItem("searchTerm", trimmed);
-    this.props.onSearch(trimmed);
   };
 
-  handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      this.handleSearch();
+      handleSearch();
     }
   };
 
-  render() {
-    return (
-      <div className="search">
-        <input
-          type="text"
-          placeholder="Search Pokémon..."
-          value={this.state.inputValue}
-          onChange={this.handleChange}
-          onKeyDown={this.handleKeyDown}
-        />
-        <button onClick={this.handleSearch}>Search</button>
-      </div>
-    );
-  }
-}
-
-export default Search;
+  return (
+    <div className="search">
+      <input
+        type="text"
+        placeholder="Search Pokémon..."
+        value={inputValue}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      />
+      <button onClick={handleSearch}>Search</button>
+    </div>
+  );
+};

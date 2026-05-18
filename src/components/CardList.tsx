@@ -1,7 +1,7 @@
-import { Component } from "react";
 import Card from "./Card";
 import Spinner from "./Spinner";
 import type Pokemon from "../interfaces/Pokemon";
+import ErrorMessage from "./ErrorMessage";
 
 interface CardListProps {
   results: Pokemon[];
@@ -9,26 +9,22 @@ interface CardListProps {
   error: string | null;
 }
 
-class CardList extends Component<CardListProps> {
-  render() {
-    const { results, loading, error } = this.props;
+export default function CardList(props: CardListProps) {
+  const { results, loading, error } = props;
 
-    if (loading) return <Spinner />;
+  if (loading) {
+    return <Spinner />;
+  }
 
-    if (error) {
-      return (
-        <div className="error">
-          <p>😕 Something went wrong:</p>
-          <p className="error__message">{error}</p>
-        </div>
-      );
-    }
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
-    if (results.length === 0) {
-      return <p className="no-results">No pokémon found</p>;
-    }
+  if (results.length === 0) {
+    return <p className="no-results">No pokémon found</p>;
+  }
 
-    return (
+  return (
       <div className="card-list">
         {results.map((pokemon) => (
           <Card
@@ -40,7 +36,4 @@ class CardList extends Component<CardListProps> {
         ))}
       </div>
     );
-  }
-}
-
-export default CardList;
+};

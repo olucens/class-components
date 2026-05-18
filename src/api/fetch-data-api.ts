@@ -1,3 +1,4 @@
+import useLocalStorage from "../hooks/useLocalStorage";
 import type Pokemon from "../interfaces/Pokemon";
 import type {
     PokemonDetailsResponse,

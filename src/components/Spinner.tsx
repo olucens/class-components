@@ -1,13 +1,8 @@
-import { Component } from "react";
+export default function Spinner() {
 
-class Spinner extends Component {
-  render() {
-    return (
-      <div className="spinner">
-        <div className="spinner__circle" />
-      </div>
-    );
-  }
-}
-
-export default Spinner;
+  return (
+    <div className="spinner">
+      <div className="spinner__circle" />
+    </div>
+  );
+};

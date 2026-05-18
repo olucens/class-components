@@ -105,12 +105,10 @@ export default function App() {
     fetchData(searchTerm, 0);
   }, []);
 
-  // Обработчик поиска
   const handleSearch = (term: string) => {
     fetchData(term, 0);
   };
 
-  // Навигация по страницам
   const nextPage = () => {
     if (hasNext) {
       fetchData("", page + 1);
