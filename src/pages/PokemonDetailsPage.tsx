@@ -4,9 +4,6 @@ import Spinner from "../components/Spinner";
 import ErrorMessage from "../components/ErrorMessage";
 import { useParams } from "react-router-dom";
 
-interface PokemonDetailsPageProps {
-  pokemonId: string;
-}
 
 export default function PokemonDetailsPage() {
   const { pokemonId } = useParams();

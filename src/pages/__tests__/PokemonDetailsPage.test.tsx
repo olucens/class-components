@@ -48,7 +48,7 @@ describe('PokemonDetailsPage', () => {
   });
 
   it('loads and displays pokémon details', async () => {
-    globalThis.fetch = vi.fn() as any;
+    globalThis.fetch = vi.fn();
     (globalThis.fetch as any)
       .mockResolvedValueOnce({
         ok: true,
