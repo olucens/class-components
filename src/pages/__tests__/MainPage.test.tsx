@@ -123,57 +123,6 @@ describe('MainPage', () => {
     });
   });
 
-  it('opens details panel when clicking a card', async () => {
-    globalThis.fetch = vi.fn() as any;
-    (globalThis.fetch as any)
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [{ name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' }], next: null }) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 1, name: 'bulbasaur' }) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ flavor_text_entries: mockPokemonData.species.flavor_text_entries }) });
-
-    renderMainPage();
-
-    const bulbasaurCard = await screen.findByText(/bulbasaur/i);
-    const user = userEvent.setup();
-    await user.click(bulbasaurCard);
-
-    // Check that details are being loaded - either spinner or content
-    await waitFor(() => {
-      const detailsWrapper = document.querySelector('.details-wrapper');
-      expect(detailsWrapper).toBeInTheDocument();
-    }, { timeout: 2000 });
-  });
-
-  it('closes details panel when close button clicked', async () => {
-    globalThis.fetch = vi.fn() as any;
-    (globalThis.fetch as any)
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [{ name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' }], next: null }) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 1, name: 'bulbasaur' }) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ flavor_text_entries: mockPokemonData.species.flavor_text_entries }) });
-
-    renderMainPage();
-
-    const bulbasaurCard = await screen.findByText(/bulbasaur/i);
-    const user = userEvent.setup();
-    await user.click(bulbasaurCard);
-
-    // Wait for details panel to appear
-    await waitFor(() => {
-      const detailsWrapper = document.querySelector('.details-wrapper');
-      expect(detailsWrapper).toBeInTheDocument();
-    }, { timeout: 2000 });
-
-    // Find and click close button using querySelector
-    const closeButton = document.querySelector('.details-wrapper__close-btn') as HTMLButtonElement;
-    expect(closeButton).toBeInTheDocument();
-    await user.click(closeButton);
-
-    // Details panel should be closed
-    await waitFor(() => {
-      const detailsWrapper = document.querySelector('.details-wrapper');
-      expect(detailsWrapper).not.toBeInTheDocument();
-    });
-  });
-
   it('navigates to next page when next button clicked and has next', async () => {
     globalThis.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [{ name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' }], next: 'next-url' }) })

@@ -1,30 +1,32 @@
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Search from "../components/Search";
 import CardList from "../components/CardList";
 import ErrorBoundary from "../components/ErrorBoundary";
-import PokemonDetailsPage from "./PokemonDetailsPage";
 import { fetchPokemonByTerm, fetchPokemonPage } from "../api/fetch-data-api";
 import type Pokemon from "../interfaces/Pokemon";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const PAGE_SIZE = 20;
 
 export default function MainPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  
+  const isDetailsOpen = location.pathname.includes('/details/');
+  const currentPage = parseInt(searchParams.get("page") || "0", 10);
+  
   const [results, setResults] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [throwError, setThrowError] = useState(false);
   const [hasNext, setHasNext] = useState(false);
-
-  const currentPage = parseInt(searchParams.get("page") || "0", 10);
-  const detailsId = searchParams.get("details");
-  const searchTerm = localStorage.getItem("searchTerm") ?? "";
+  const [searchTerm, setSearchTerm] = useLocalStorage("searchTerm", "");
 
   const fetchData = async (term: string, pageNum = 0) => {
     const trimmed = term.trim();
-
     setLoading(true);
     setError(null);
 
@@ -35,15 +37,13 @@ export default function MainPage() {
         setSearchParams({ page: "0" });
         setHasNext(false);
       } else {
-        const { results: pageResults, hasNext: hasMorePages } =
-          await fetchPokemonPage(pageNum, PAGE_SIZE);
+        const { results: pageResults, hasNext: hasMorePages } = await fetchPokemonPage(pageNum, PAGE_SIZE);
         setResults(pageResults);
         setSearchParams({ page: pageNum.toString() });
         setHasNext(hasMorePages);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
+      setError(err instanceof Error ? err.message : "Unknown error");
       setResults([]);
       setHasNext(false);
     } finally {
@@ -52,48 +52,35 @@ export default function MainPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchData(searchTerm, currentPage);
-    // Note: Intentionally excluding searchTerm and currentPage from deps
-    // because they come from localStorage/URL, not props.
-    // This effect should only run once on component mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSearch = (term: string) => {
+    setSearchTerm(term);
     fetchData(term, 0);
   };
 
   const handleCardClick = (pokemonName: string) => {
-    setSearchParams({ page: currentPage.toString(), details: pokemonName });
+    navigate(`/details/${pokemonName}?page=${currentPage}`);
   };
 
   const handleCloseDetails = () => {
-    setSearchParams({ page: currentPage.toString() });
+    navigate(`/?page=${currentPage}`);
   };
 
   const nextPage = () => {
-    if (hasNext) {
-      fetchData("", currentPage + 1);
-    }
+    if (hasNext) fetchData("", currentPage + 1);
   };
 
   const prevPage = () => {
-    if (currentPage > 0) {
-      fetchData("", currentPage - 1);
-    }
+    if (currentPage > 0) fetchData("", currentPage - 1);
   };
 
-  const triggerError = () => {
-    setThrowError(true);
-  };
+  const triggerError = () => setThrowError(true);
+  const handleBoundaryReset = () => setThrowError(false);
 
-  const handleBoundaryReset = () => {
-    setThrowError(false);
-  };
-
-  if (throwError) {
-    throw new Error("Test error triggered!");
-  }
+  if (throwError) throw new Error("Test error triggered!");
 
   return (
     <ErrorBoundary onReset={handleBoundaryReset}>
@@ -131,7 +118,7 @@ export default function MainPage() {
             </button>
           </main>
 
-          {detailsId && (
+          {isDetailsOpen && (
             <div className="details-wrapper">
               <button
                 className="details-wrapper__close-btn"
@@ -142,7 +129,7 @@ export default function MainPage() {
                 ×
               </button>
               <div className="details-wrapper__content">
-                <PokemonDetailsPage pokemonId={detailsId} />
+                <Outlet />
               </div>
             </div>
           )}
