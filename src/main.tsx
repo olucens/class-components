@@ -11,11 +11,12 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
+        <Route path="*" element={<NotFoundPage />} />
         <Route path="/" element={<MainPage />}> 
           <Route path="details/:pokemonId" element={<PokemonDetailsPage />} />
         </Route>
         <Route path="/about" element={<AboutPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        
       </Routes>
     </BrowserRouter>
   </StrictMode>,
