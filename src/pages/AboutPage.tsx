@@ -1,18 +1,12 @@
 import Header from "../components/Header";
-import ErrorBoundary from "../components/ErrorBoundary";
-import { useState } from "react";
+import ButtonComponent from "../components/ButtonComponent";
+import { useAppContext } from "../context/useAppContext";
 
 export default function AboutPage() {
-  const [throwError, setThrowError] = useState(false);
-
-  if (throwError) {
-    throw new Error("Test error triggered!");
-  }
-
+  const { triggerError } = useAppContext();
   return (
-    <ErrorBoundary onReset={() => setThrowError(false)}>
-      <>
-        <Header />
+    <>
+      <Header />
         <main>
           <section className="results-panel">
             <div className="about-page">
@@ -75,13 +69,9 @@ export default function AboutPage() {
             </div>
           </section>
         </main>
-        <button
-          className="error-trigger"
-          onClick={() => setThrowError(true)}
-        >
+        <ButtonComponent className="error-trigger" onClick={triggerError}>
           Trigger Error
-        </button>
+        </ButtonComponent>
       </>
-    </ErrorBoundary>
   );
 }

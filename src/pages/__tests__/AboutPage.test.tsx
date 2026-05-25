@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "../../test-utils";
 import AboutPage from "../AboutPage";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";;
 
 describe("AboutPage", () => {
   beforeEach(() => {
