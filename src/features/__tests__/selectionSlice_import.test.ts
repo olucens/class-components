@@ -1,3 +1,5 @@
+import { vi } from "vitest";
+
 describe("selectionSlice initial readInitialState behavior", () => {
   beforeEach(() => {
     vi.resetModules();

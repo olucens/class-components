@@ -1,8 +1,9 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import type { ReactElement } from "react";
 import ErrorBoundary from "../ErrorBoundary";
+import { vi } from "vitest";
 
-function Bomb() {
+function Bomb(): ReactElement {
   throw new Error("boom");
 }
 
@@ -17,7 +18,7 @@ describe("ErrorBoundary onReset", () => {
 
     expect(screen.getByText(/something went wrong/i)).toBeDefined();
     const btn = screen.getByRole("button");
-    btn.click();
+    fireEvent.click(btn);
     expect(onReset).toHaveBeenCalled();
   });
 });

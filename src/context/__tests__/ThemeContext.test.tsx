@@ -1,6 +1,6 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import ThemeProvider, { useTheme } from "../ThemeContext";
+import { vi } from "vitest";
 
 function Consumer() {
   const { theme, resolved, setTheme, toggle } = useTheme();
