@@ -21,7 +21,7 @@ export default function MainPage() {
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   
   const [results, setResults] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasNext, setHasNext] = useState(false);
   const [searchTerm, setSearchTerm] = useLocalStorage("searchTerm", "");
@@ -53,8 +53,41 @@ export default function MainPage() {
   };
 
   useEffect(() => {
-    fetchData(searchTerm, currentPage);
-  }, []);
+    let cancelled = false;
+
+    const loadInitialData = async () => {
+      const trimmed = searchTerm.trim();
+
+      try {
+        if (trimmed) {
+          const searchResults = await fetchPokemonByTerm(trimmed);
+          if (cancelled) return;
+          setResults(searchResults);
+          setSearchParams({ page: "1" });
+          setHasNext(false);
+        } else {
+          const { results: pageResults, hasNext: hasMorePages } = await fetchPokemonPage(currentPage - 1, PAGE_SIZE);
+          if (cancelled) return;
+          setResults(pageResults);
+          setSearchParams({ page: currentPage.toString() });
+          setHasNext(hasMorePages);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Unknown error");
+        setResults([]);
+        setHasNext(false);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadInitialData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentPage, searchTerm, setSearchParams]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -80,7 +113,7 @@ export default function MainPage() {
   return (
     <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
         <Header />
-        <div style={{ display: "flex", flex: 1 }}>
+        <div className="width-wrapper" style={{ display: "flex", flex: 1 }}>
           <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <section className="search-panel">
               <Search onSearch={handleSearch} />

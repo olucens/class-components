@@ -4,14 +4,25 @@ import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import PokemonDetailsPage from "./pages/PokemonDetailsPage";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { AppProvider } from "./context/AppContext";
 import { useAppContext } from "./context/useAppContext";
+import Flyout from "./components/Flyout";
+
+function ErrorTrigger() {
+  const { hasError } = useAppContext();
+
+  if (hasError) {
+    throw new Error("Test error triggered!");
+  }
+
+  return null;
+}
 
 function AppRoutes() {
   const { resetError } = useAppContext();
 
   return (
     <ErrorBoundary onReset={resetError}>
+      <ErrorTrigger />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />}> 
@@ -28,8 +39,9 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AppProvider>
+    <>
       <AppRoutes />
-    </AppProvider>
+      <Flyout />
+    </>
   );
 }
